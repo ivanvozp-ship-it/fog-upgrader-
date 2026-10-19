@@ -1,1 +1,141 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fog Upgrader</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b100e;color:#effff3;font-family:Arial,sans-serif}
+header{padding:22px 18px;background:linear-gradient(135deg,#153d27,#101713);border-bottom:1px solid #294b34}
+.logo{font-size:25px;font-weight:900;color:#7bff9b}
+.subtitle{color:#9bb7a2;font-size:12px;margin-top:6px}
+.balance{margin-top:18px;background:#17251b;padding:15px;border-radius:14px;border:1px solid #31583b}
+.balance small{color:#9bb7a2}
+.money{font-size:27px;font-weight:bold;margin-top:5px}
+main{padding:16px;max-width:600px;margin:auto}
+h2{font-size:18px;margin:20px 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#141c17;border:1px solid #283a2e;border-radius:14px;padding:14px}
+.art{height:85px;border-radius:10px;background:linear-gradient(145deg,#23452e,#111812);display:grid;place-items:center;font-size:39px}
+.card h3{font-size:15px;margin:12px 0 6px}
+.muted{font-size:12px;color:#9bb7a2;line-height:1.5}
+button{background:#72f28f;color:#0b160e;border:0;border-radius:9px;padding:12px 10px;font-weight:bold;width:100%;margin-top:12px;cursor:pointer}
+button.secondary{background:#24372a;color:#eaffed}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:20px}
+nav button{font-size:11px;padding:12px 2px;margin:0;background:#19251d;color:#c6e4ce}
+nav button.active{background:#72f28f;color:#0b160e}
+.panel{display:none}
+.panel.active{display:block}
+.item{padding:12px;margin:8px 0;background:#17231a;border-radius:10px;border:1px solid #2d4433}
+.notice{font-size:12px;color:#a4b9a9;line-height:1.5;margin-top:18px}
+footer{text-align:center;padding:22px;color:#698171;font-size:11px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">FOG UPGRADER</div>
+  <div class="subtitle">FAN OF GUNS · COMMUNITY GAME</div>
+  <div class="balance">
+    <small>ТВОЙ БАЛАНС · ДЕМО</small>
+    <div class="money">🪙 <span id="coins">1000</span></div>
+  </div>
+</header>
+<main>
+<nav>
+  <button class="active" onclick="showTab('home',this)">🏠 Главная</button>
+  <button onclick="showTab('cases',this)">📦 Кейсы</button>
+  <button onclick="showTab('inventory',this)">🎒 Скины</button>
+  <button onclick="showTab('upgrade',this)">⬆️ Апгрейд</button>
+</nav>
+
+<section id="home" class="panel active">
+  <h2>Добро пожаловать!</h2>
+  <div class="card">
+    <div class="art">🎮</div>
+    <h3>Твоя игровая зона</h3>
+    <div class="muted">Открывай виртуальные кейсы, собирай коллекцию и пробуй улучшения. Сейчас это демонстрационная версия.</div>
+    <button onclick="showTab('cases',document.querySelectorAll('nav button')[1])">Открыть кейсы</button>
+  </div>
+  <h2>Быстрые действия</h2>
+  <div class="grid">
+    <div class="card"><div class="art">🎁</div><h3>Награда</h3><div class="muted">Получай монеты один раз за текущую сессию.</div><button onclick="daily()">Забрать +100</button></div>
+    <div class="card"><div class="art">🏆</div><h3>Профиль</h3><div class="muted">Тестовый профиль игрока.</div><button class="secondary" onclick="profile()">Мой профиль</button></div>
+  </div>
+</section>
+
+<section id="cases" class="panel">
+  <h2>📦 Магазин кейсов</h2>
+  <div class="grid">
+    <div class="card"><div class="art">🟩</div><h3>Начальный</h3><div class="muted">Цена: 100 монет</div><button onclick="openCase('Начальный',100)">Открыть</button></div>
+    <div class="card"><div class="art">🟦</div><h3>Тактический</h3><div class="muted">Цена: 250 монет</div><button onclick="openCase('Тактический',250)">Открыть</button></div>
+    <div class="card"><div class="art">🟪</div><h3>Элитный</h3><div class="muted">Цена: 500 монет</div><button onclick="openCase('Элитный',500)">Открыть</button></div>
+    <div class="card"><div class="art">🟨</div><h3>Легендарный</h3><div class="muted">Цена: 800 монет</div><button onclick="openCase('Легендарный',800)">Открыть</button></div>
+  </div>
+  <p class="notice">В этом прототипе кейсы используют только виртуальные монеты. Результаты случайные и не связаны с реальной игрой Fan of Guns.</p>
+</section>
+
+<section id="inventory" class="panel">
+  <h2>🎒 Мой инвентарь</h2>
+  <div id="items"><p class="muted">Пока здесь пусто. Открой первый кейс!</p></div>
+</section>
+
+<section id="upgrade" class="panel">
+  <h2>⬆️ Улучшение скинов</h2>
+  <div class="card">
+    <div class="art">⚙️</div>
+    <h3>Попробуй удачу</h3>
+    <div class="muted">Цена попытки — 50 монет. Шанс успеха в демо — 50%. При успехе выдаётся виртуальный скин.</div>
+    <button onclick="upgrade()">Улучшить за 50 🪙</button>
+  </div>
+</section>
+<p class="notice" id="message">Добро пожаловать в тестовую версию Fog Upgrader.</p>
+</main>
+<footer>FOG UPGRADER · DEMO BUILD</footer>
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if(tg){tg.ready();tg.expand()}
+let coins=1000, inventory=[], gotDaily=false;
+function update(){
+ document.getElementById('coins').textContent=coins;
+ const box=document.getElementById('items');
+ box.innerHTML=inventory.length?inventory.map((x,i)=>'<div class="item">🎨 '+x+' <span class="muted"> · #'+(i+1)+'</span></div>').join(''):'<p class="muted">Пока здесь пусто. Открой первый кейс!</p>';
+}
+function msg(t){document.getElementById('message').textContent=t}
+function showTab(id,btn){
+ document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+ if(btn)btn.classList.add('active');
+}
+function openCase(name,cost){
+ if(coins<cost){msg('Недостаточно монет для этого кейса.');return}
+ coins-=cost;
+ const skins=['Полевой камуфляж','Неоновый след','Стальной охотник','Зелёный импульс','Теневой клинок'];
+ const skin=skins[Math.floor(Math.random()*skins.length)];
+ inventory.push(skin);
+ update();msg('Кейс «'+name+'» открыт! Получен скин: '+skin);
+}
+function upgrade(){
+ if(coins<50){msg('Недостаточно монет.');return}
+ coins-=50;
+ if(Math.random()<0.5){
+  const skin='Улучшенный скин '+(inventory.length+1);
+  inventory.push(skin);msg('Успех! Получен: '+skin);
+ }else{msg('Попытка не удалась. Это демо-режим.')}
+ update();
+}
+function daily(){
+ if(gotDaily){msg('Награда уже получена в этой сессии.');return}
+ coins+=100;gotDaily=true;update();msg('Получено 100 виртуальных монет!');
+}
+function profile(){
+ msg('Демо-профиль: скинов — '+inventory.length+'. Баланс — '+coins+' монет.');
+}
+update();
+</script>
+</body>
+</html>
+
